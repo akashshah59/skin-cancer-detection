@@ -1,1 +1,1134 @@
-{"metadata":{"kernelspec":{"language":"python","display_name":"Python 3","name":"python3"},"language_info":{"name":"python","version":"3.10.13","mimetype":"text/x-python","codemirror_mode":{"name":"ipython","version":3},"pygments_lexer":"ipython3","nbconvert_exporter":"python","file_extension":".py"},"kaggle":{"accelerator":"none","dataSources":[{"sourceId":63056,"databundleVersionId":8940774,"sourceType":"competition"}],"dockerImageVersionId":30732,"isInternetEnabled":true,"language":"python","sourceType":"notebook","isGpuEnabled":false}},"nbformat_minor":4,"nbformat":4,"cells":[{"cell_type":"code","source":"import numpy as np # linear algebra\nimport pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\n\nimport os\nfor dirname, _, filenames in os.walk('/kaggle/input'):\n    for filename in filenames:\n        print(os.path.join(dirname, filename))","metadata":{"_uuid":"8f2839f25d086af736a60e9eeb907d3b93b6e0e5","_cell_guid":"b1076dfc-b9ad-4769-8c92-a6c4dae69d19","execution":{"iopub.status.busy":"2024-07-09T18:12:26.894575Z","iopub.execute_input":"2024-07-09T18:12:26.895840Z","iopub.status.idle":"2024-07-09T18:12:30.365064Z","shell.execute_reply.started":"2024-07-09T18:12:26.895782Z","shell.execute_reply":"2024-07-09T18:12:30.363233Z"},"trusted":true},"execution_count":11,"outputs":[{"name":"stdout","text":"/kaggle/input/isic-2024-challenge/sample_submission.csv\n/kaggle/input/isic-2024-challenge/train-metadata.csv\n/kaggle/input/isic-2024-challenge/test-metadata.csv\n/kaggle/input/isic-2024-challenge/test-image.hdf5\n/kaggle/input/isic-2024-challenge/train-image.hdf5\n","output_type":"stream"},{"traceback":["\u001b[0;31m---------------------------------------------------------------------------\u001b[0m","\u001b[0;31mKeyboardInterrupt\u001b[0m                         Traceback (most recent call last)","Cell \u001b[0;32mIn[11], line 5\u001b[0m\n\u001b[1;32m      2\u001b[0m \u001b[38;5;28;01mimport\u001b[39;00m \u001b[38;5;21;01mpandas\u001b[39;00m \u001b[38;5;28;01mas\u001b[39;00m \u001b[38;5;21;01mpd\u001b[39;00m \u001b[38;5;66;03m# data processing, CSV file I/O (e.g. pd.read_csv)\u001b[39;00m\n\u001b[1;32m      4\u001b[0m \u001b[38;5;28;01mimport\u001b[39;00m \u001b[38;5;21;01mos\u001b[39;00m\n\u001b[0;32m----> 5\u001b[0m \u001b[38;5;28;01mfor\u001b[39;00m dirname, _, filenames \u001b[38;5;129;01min\u001b[39;00m os\u001b[38;5;241m.\u001b[39mwalk(\u001b[38;5;124m'\u001b[39m\u001b[38;5;124m/kaggle/input\u001b[39m\u001b[38;5;124m'\u001b[39m):\n\u001b[1;32m      6\u001b[0m     \u001b[38;5;28;01mfor\u001b[39;00m filename \u001b[38;5;129;01min\u001b[39;00m filenames:\n\u001b[1;32m      7\u001b[0m         \u001b[38;5;28mprint\u001b[39m(os\u001b[38;5;241m.\u001b[39mpath\u001b[38;5;241m.\u001b[39mjoin(dirname, filename))\n","File \u001b[0;32m/opt/conda/lib/python3.10/os.py:419\u001b[0m, in \u001b[0;36m_walk\u001b[0;34m(top, topdown, onerror, followlinks)\u001b[0m\n\u001b[1;32m    414\u001b[0m         \u001b[38;5;66;03m# Issue #23605: os.path.islink() is used instead of caching\u001b[39;00m\n\u001b[1;32m    415\u001b[0m         \u001b[38;5;66;03m# entry.is_symlink() result during the loop on os.scandir() because\u001b[39;00m\n\u001b[1;32m    416\u001b[0m         \u001b[38;5;66;03m# the caller can replace the directory entry during the \"yield\"\u001b[39;00m\n\u001b[1;32m    417\u001b[0m         \u001b[38;5;66;03m# above.\u001b[39;00m\n\u001b[1;32m    418\u001b[0m         \u001b[38;5;28;01mif\u001b[39;00m followlinks \u001b[38;5;129;01mor\u001b[39;00m \u001b[38;5;129;01mnot\u001b[39;00m islink(new_path):\n\u001b[0;32m--> 419\u001b[0m             \u001b[38;5;28;01myield from\u001b[39;00m _walk(new_path, topdown, onerror, followlinks)\n\u001b[1;32m    420\u001b[0m \u001b[38;5;28;01melse\u001b[39;00m:\n\u001b[1;32m    421\u001b[0m     \u001b[38;5;66;03m# Recurse into sub-directories\u001b[39;00m\n\u001b[1;32m    422\u001b[0m     \u001b[38;5;28;01mfor\u001b[39;00m new_path \u001b[38;5;129;01min\u001b[39;00m walk_dirs:\n","File \u001b[0;32m/opt/conda/lib/python3.10/os.py:419\u001b[0m, in \u001b[0;36m_walk\u001b[0;34m(top, topdown, onerror, followlinks)\u001b[0m\n\u001b[1;32m    414\u001b[0m         \u001b[38;5;66;03m# Issue #23605: os.path.islink() is used instead of caching\u001b[39;00m\n\u001b[1;32m    415\u001b[0m         \u001b[38;5;66;03m# entry.is_symlink() result during the loop on os.scandir() because\u001b[39;00m\n\u001b[1;32m    416\u001b[0m         \u001b[38;5;66;03m# the caller can replace the directory entry during the \"yield\"\u001b[39;00m\n\u001b[1;32m    417\u001b[0m         \u001b[38;5;66;03m# above.\u001b[39;00m\n\u001b[1;32m    418\u001b[0m         \u001b[38;5;28;01mif\u001b[39;00m followlinks \u001b[38;5;129;01mor\u001b[39;00m \u001b[38;5;129;01mnot\u001b[39;00m islink(new_path):\n\u001b[0;32m--> 419\u001b[0m             \u001b[38;5;28;01myield from\u001b[39;00m _walk(new_path, topdown, onerror, followlinks)\n\u001b[1;32m    420\u001b[0m \u001b[38;5;28;01melse\u001b[39;00m:\n\u001b[1;32m    421\u001b[0m     \u001b[38;5;66;03m# Recurse into sub-directories\u001b[39;00m\n\u001b[1;32m    422\u001b[0m     \u001b[38;5;28;01mfor\u001b[39;00m new_path \u001b[38;5;129;01min\u001b[39;00m walk_dirs:\n","File \u001b[0;32m/opt/conda/lib/python3.10/os.py:419\u001b[0m, in \u001b[0;36m_walk\u001b[0;34m(top, topdown, onerror, followlinks)\u001b[0m\n\u001b[1;32m    414\u001b[0m         \u001b[38;5;66;03m# Issue #23605: os.path.islink() is used instead of caching\u001b[39;00m\n\u001b[1;32m    415\u001b[0m         \u001b[38;5;66;03m# entry.is_symlink() result during the loop on os.scandir() because\u001b[39;00m\n\u001b[1;32m    416\u001b[0m         \u001b[38;5;66;03m# the caller can replace the directory entry during the \"yield\"\u001b[39;00m\n\u001b[1;32m    417\u001b[0m         \u001b[38;5;66;03m# above.\u001b[39;00m\n\u001b[1;32m    418\u001b[0m         \u001b[38;5;28;01mif\u001b[39;00m followlinks \u001b[38;5;129;01mor\u001b[39;00m \u001b[38;5;129;01mnot\u001b[39;00m islink(new_path):\n\u001b[0;32m--> 419\u001b[0m             \u001b[38;5;28;01myield from\u001b[39;00m _walk(new_path, topdown, onerror, followlinks)\n\u001b[1;32m    420\u001b[0m \u001b[38;5;28;01melse\u001b[39;00m:\n\u001b[1;32m    421\u001b[0m     \u001b[38;5;66;03m# Recurse into sub-directories\u001b[39;00m\n\u001b[1;32m    422\u001b[0m     \u001b[38;5;28;01mfor\u001b[39;00m new_path \u001b[38;5;129;01min\u001b[39;00m walk_dirs:\n","File \u001b[0;32m/opt/conda/lib/python3.10/os.py:377\u001b[0m, in \u001b[0;36m_walk\u001b[0;34m(top, topdown, onerror, followlinks)\u001b[0m\n\u001b[1;32m    374\u001b[0m     \u001b[38;5;28;01mreturn\u001b[39;00m\n\u001b[1;32m    376\u001b[0m \u001b[38;5;28;01mtry\u001b[39;00m:\n\u001b[0;32m--> 377\u001b[0m     is_dir \u001b[38;5;241m=\u001b[39m \u001b[43mentry\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mis_dir\u001b[49m\u001b[43m(\u001b[49m\u001b[43m)\u001b[49m\n\u001b[1;32m    378\u001b[0m \u001b[38;5;28;01mexcept\u001b[39;00m \u001b[38;5;167;01mOSError\u001b[39;00m:\n\u001b[1;32m    379\u001b[0m     \u001b[38;5;66;03m# If is_dir() raises an OSError, consider that the entry is not\u001b[39;00m\n\u001b[1;32m    380\u001b[0m     \u001b[38;5;66;03m# a directory, same behaviour than os.path.isdir().\u001b[39;00m\n\u001b[1;32m    381\u001b[0m     is_dir \u001b[38;5;241m=\u001b[39m \u001b[38;5;28;01mFalse\u001b[39;00m\n","\u001b[0;31mKeyboardInterrupt\u001b[0m: "],"ename":"KeyboardInterrupt","evalue":"","output_type":"error"}]},{"cell_type":"code","source":"HOME_DIRECTORY = 'kaggle/input/isic-2024-challenge/'\ntrain_metadata = pd.read_csv('/kaggle/input/isic-2024-challenge/train-metadata.csv',low_memory = False)","metadata":{"execution":{"iopub.status.busy":"2024-07-09T18:13:37.853306Z","iopub.execute_input":"2024-07-09T18:13:37.853728Z","iopub.status.idle":"2024-07-09T18:13:46.038431Z","shell.execute_reply.started":"2024-07-09T18:13:37.853695Z","shell.execute_reply":"2024-07-09T18:13:46.037211Z"},"trusted":true},"execution_count":17,"outputs":[{"name":"stderr","text":"/tmp/ipykernel_33/1628584210.py:2: DtypeWarning: Columns (51,52) have mixed types. Specify dtype option on import or set low_memory=False.\n  train_metadata = pd.read_csv('/kaggle/input/isic-2024-challenge/train-metadata.csv')\n","output_type":"stream"}]},{"cell_type":"code","source":"train_metadata.shape","metadata":{"execution":{"iopub.status.busy":"2024-07-09T18:14:24.955194Z","iopub.execute_input":"2024-07-09T18:14:24.955633Z","iopub.status.idle":"2024-07-09T18:14:24.966396Z","shell.execute_reply.started":"2024-07-09T18:14:24.955599Z","shell.execute_reply":"2024-07-09T18:14:24.964066Z"},"trusted":true},"execution_count":20,"outputs":[{"execution_count":20,"output_type":"execute_result","data":{"text/plain":"(401059, 55)"},"metadata":{}}]},{"cell_type":"code","source":"train_metadata.isic_id.nunique() ","metadata":{"execution":{"iopub.status.busy":"2024-07-09T18:14:30.233043Z","iopub.execute_input":"2024-07-09T18:14:30.233475Z","iopub.status.idle":"2024-07-09T18:14:30.412794Z","shell.execute_reply.started":"2024-07-09T18:14:30.233443Z","shell.execute_reply":"2024-07-09T18:14:30.411095Z"},"trusted":true},"execution_count":21,"outputs":[{"execution_count":21,"output_type":"execute_result","data":{"text/plain":"401059"},"metadata":{}}]},{"cell_type":"code","source":"train_metadata.target.mean()","metadata":{"execution":{"iopub.status.busy":"2024-07-09T18:14:38.077780Z","iopub.execute_input":"2024-07-09T18:14:38.078230Z","iopub.status.idle":"2024-07-09T18:14:38.087589Z","shell.execute_reply.started":"2024-07-09T18:14:38.078196Z","shell.execute_reply":"2024-07-09T18:14:38.086011Z"},"trusted":true},"execution_count":22,"outputs":[{"execution_count":22,"output_type":"execute_result","data":{"text/plain":"0.0009799056996601498"},"metadata":{}}]},{"cell_type":"code","source":"train_metadata.patient_id.nunique()","metadata":{"execution":{"iopub.status.busy":"2024-07-09T18:15:30.759549Z","iopub.execute_input":"2024-07-09T18:15:30.760068Z","iopub.status.idle":"2024-07-09T18:15:30.809669Z","shell.execute_reply.started":"2024-07-09T18:15:30.760031Z","shell.execute_reply":"2024-07-09T18:15:30.807956Z"},"trusted":true},"execution_count":25,"outputs":[{"execution_count":25,"output_type":"execute_result","data":{"text/plain":"1042"},"metadata":{}}]},{"cell_type":"code","source":"train_metadata.groupby(['patient_id']).agg({'target':'sum'}).sort_values('target',ascending = False).head(5)","metadata":{"execution":{"iopub.status.busy":"2024-07-09T18:16:54.267222Z","iopub.execute_input":"2024-07-09T18:16:54.267653Z","iopub.status.idle":"2024-07-09T18:16:54.343012Z","shell.execute_reply.started":"2024-07-09T18:16:54.267621Z","shell.execute_reply":"2024-07-09T18:16:54.341222Z"},"trusted":true},"execution_count":31,"outputs":[{"execution_count":31,"output_type":"execute_result","data":{"text/plain":"            target\npatient_id        \nIP_2456971      14\nIP_1959239       8\nIP_9324599       7\nIP_0669361       7\nIP_3905195       6","text/html":"<div>\n<style scoped>\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n</style>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>target</th>\n    </tr>\n    <tr>\n      <th>patient_id</th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>IP_2456971</th>\n      <td>14</td>\n    </tr>\n    <tr>\n      <th>IP_1959239</th>\n      <td>8</td>\n    </tr>\n    <tr>\n      <th>IP_9324599</th>\n      <td>7</td>\n    </tr>\n    <tr>\n      <th>IP_0669361</th>\n      <td>7</td>\n    </tr>\n    <tr>\n      <th>IP_3905195</th>\n      <td>6</td>\n    </tr>\n  </tbody>\n</table>\n</div>"},"metadata":{}}]},{"cell_type":"code","source":"train_metadata[train_metadata.patient_id == 'IP_2456971']","metadata":{"execution":{"iopub.status.busy":"2024-07-09T18:17:18.259085Z","iopub.execute_input":"2024-07-09T18:17:18.259485Z","iopub.status.idle":"2024-07-09T18:17:18.388980Z","shell.execute_reply.started":"2024-07-09T18:17:18.259454Z","shell.execute_reply":"2024-07-09T18:17:18.387517Z"},"trusted":true},"execution_count":32,"outputs":[{"execution_count":32,"output_type":"execute_result","data":{"text/plain":"             isic_id  target  patient_id  age_approx   sex  \\\n1220    ISIC_0103600       0  IP_2456971        60.0  male   \n2964    ISIC_0145420       0  IP_2456971        60.0  male   \n7598    ISIC_0260667       0  IP_2456971        60.0  male   \n7892    ISIC_0268177       0  IP_2456971        60.0  male   \n8212    ISIC_0275762       0  IP_2456971        60.0  male   \n...              ...     ...         ...         ...   ...   \n395357  ISIC_9856283       0  IP_2456971        60.0  male   \n395680  ISIC_9864511       0  IP_2456971        60.0  male   \n395959  ISIC_9872176       0  IP_2456971        60.0  male   \n398597  ISIC_9939770       0  IP_2456971        60.0  male   \n398966  ISIC_9949507       0  IP_2456971        60.0  male   \n\n       anatom_site_general  clin_size_long_diam_mm          image_type  \\\n1220       lower extremity                    3.76  TBP tile: close-up   \n2964       posterior torso                    2.74  TBP tile: close-up   \n7598       posterior torso                    3.12  TBP tile: close-up   \n7892        anterior torso                    2.60  TBP tile: close-up   \n8212       posterior torso                    2.60  TBP tile: close-up   \n...                    ...                     ...                 ...   \n395357      anterior torso                    3.72  TBP tile: close-up   \n395680      anterior torso                    2.62  TBP tile: close-up   \n395959     upper extremity                    3.06  TBP tile: close-up   \n398597      anterior torso                    2.68  TBP tile: close-up   \n398966     upper extremity                    3.77  TBP tile: close-up   \n\n       tbp_tile_type   tbp_lv_A  ...  lesion_id  iddx_full  iddx_1  iddx_2  \\\n1220       3D: white  11.784011  ...        NaN     Benign  Benign     NaN   \n2964       3D: white  17.505310  ...        NaN     Benign  Benign     NaN   \n7598       3D: white  21.784206  ...        NaN     Benign  Benign     NaN   \n7892       3D: white  16.102577  ...        NaN     Benign  Benign     NaN   \n8212       3D: white  23.041968  ...        NaN     Benign  Benign     NaN   \n...              ...        ...  ...        ...        ...     ...     ...   \n395357     3D: white  20.770307  ...        NaN     Benign  Benign     NaN   \n395680     3D: white  18.050493  ...        NaN     Benign  Benign     NaN   \n395959     3D: white  17.836664  ...        NaN     Benign  Benign     NaN   \n398597     3D: white  19.071840  ...        NaN     Benign  Benign     NaN   \n398966     3D: white  18.261723  ...        NaN     Benign  Benign     NaN   \n\n        iddx_3  iddx_4  iddx_5  mel_mitotic_index  mel_thick_mm  \\\n1220       NaN     NaN     NaN                NaN           NaN   \n2964       NaN     NaN     NaN                NaN           NaN   \n7598       NaN     NaN     NaN                NaN           NaN   \n7892       NaN     NaN     NaN                NaN           NaN   \n8212       NaN     NaN     NaN                NaN           NaN   \n...        ...     ...     ...                ...           ...   \n395357     NaN     NaN     NaN                NaN           NaN   \n395680     NaN     NaN     NaN                NaN           NaN   \n395959     NaN     NaN     NaN                NaN           NaN   \n398597     NaN     NaN     NaN                NaN           NaN   \n398966     NaN     NaN     NaN                NaN           NaN   \n\n        tbp_lv_dnn_lesion_confidence  \n1220                       78.042740  \n2964                       98.466611  \n7598                       99.998081  \n7892                       99.994957  \n8212                       77.218443  \n...                              ...  \n395357                     99.998844  \n395680                     99.998188  \n395959                     99.426705  \n398597                     99.998605  \n398966                     99.194908  \n\n[445 rows x 55 columns]","text/html":"<div>\n<style scoped>\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n</style>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>isic_id</th>\n      <th>target</th>\n      <th>patient_id</th>\n      <th>age_approx</th>\n      <th>sex</th>\n      <th>anatom_site_general</th>\n      <th>clin_size_long_diam_mm</th>\n      <th>image_type</th>\n      <th>tbp_tile_type</th>\n      <th>tbp_lv_A</th>\n      <th>...</th>\n      <th>lesion_id</th>\n      <th>iddx_full</th>\n      <th>iddx_1</th>\n      <th>iddx_2</th>\n      <th>iddx_3</th>\n      <th>iddx_4</th>\n      <th>iddx_5</th>\n      <th>mel_mitotic_index</th>\n      <th>mel_thick_mm</th>\n      <th>tbp_lv_dnn_lesion_confidence</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>1220</th>\n      <td>ISIC_0103600</td>\n      <td>0</td>\n      <td>IP_2456971</td>\n      <td>60.0</td>\n      <td>male</td>\n      <td>lower extremity</td>\n      <td>3.76</td>\n      <td>TBP tile: close-up</td>\n      <td>3D: white</td>\n      <td>11.784011</td>\n      <td>...</td>\n      <td>NaN</td>\n      <td>Benign</td>\n      <td>Benign</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>78.042740</td>\n    </tr>\n    <tr>\n      <th>2964</th>\n      <td>ISIC_0145420</td>\n      <td>0</td>\n      <td>IP_2456971</td>\n      <td>60.0</td>\n      <td>male</td>\n      <td>posterior torso</td>\n      <td>2.74</td>\n      <td>TBP tile: close-up</td>\n      <td>3D: white</td>\n      <td>17.505310</td>\n      <td>...</td>\n      <td>NaN</td>\n      <td>Benign</td>\n      <td>Benign</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>98.466611</td>\n    </tr>\n    <tr>\n      <th>7598</th>\n      <td>ISIC_0260667</td>\n      <td>0</td>\n      <td>IP_2456971</td>\n      <td>60.0</td>\n      <td>male</td>\n      <td>posterior torso</td>\n      <td>3.12</td>\n      <td>TBP tile: close-up</td>\n      <td>3D: white</td>\n      <td>21.784206</td>\n      <td>...</td>\n      <td>NaN</td>\n      <td>Benign</td>\n      <td>Benign</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>99.998081</td>\n    </tr>\n    <tr>\n      <th>7892</th>\n      <td>ISIC_0268177</td>\n      <td>0</td>\n      <td>IP_2456971</td>\n      <td>60.0</td>\n      <td>male</td>\n      <td>anterior torso</td>\n      <td>2.60</td>\n      <td>TBP tile: close-up</td>\n      <td>3D: white</td>\n      <td>16.102577</td>\n      <td>...</td>\n      <td>NaN</td>\n      <td>Benign</td>\n      <td>Benign</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>99.994957</td>\n    </tr>\n    <tr>\n      <th>8212</th>\n      <td>ISIC_0275762</td>\n      <td>0</td>\n      <td>IP_2456971</td>\n      <td>60.0</td>\n      <td>male</td>\n      <td>posterior torso</td>\n      <td>2.60</td>\n      <td>TBP tile: close-up</td>\n      <td>3D: white</td>\n      <td>23.041968</td>\n      <td>...</td>\n      <td>NaN</td>\n      <td>Benign</td>\n      <td>Benign</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>77.218443</td>\n    </tr>\n    <tr>\n      <th>...</th>\n      <td>...</td>\n      <td>...</td>\n      <td>...</td>\n      <td>...</td>\n      <td>...</td>\n      <td>...</td>\n      <td>...</td>\n      <td>...</td>\n      <td>...</td>\n      <td>...</td>\n      <td>...</td>\n      <td>...</td>\n      <td>...</td>\n      <td>...</td>\n      <td>...</td>\n      <td>...</td>\n      <td>...</td>\n      <td>...</td>\n      <td>...</td>\n      <td>...</td>\n      <td>...</td>\n    </tr>\n    <tr>\n      <th>395357</th>\n      <td>ISIC_9856283</td>\n      <td>0</td>\n      <td>IP_2456971</td>\n      <td>60.0</td>\n      <td>male</td>\n      <td>anterior torso</td>\n      <td>3.72</td>\n      <td>TBP tile: close-up</td>\n      <td>3D: white</td>\n      <td>20.770307</td>\n      <td>...</td>\n      <td>NaN</td>\n      <td>Benign</td>\n      <td>Benign</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>99.998844</td>\n    </tr>\n    <tr>\n      <th>395680</th>\n      <td>ISIC_9864511</td>\n      <td>0</td>\n      <td>IP_2456971</td>\n      <td>60.0</td>\n      <td>male</td>\n      <td>anterior torso</td>\n      <td>2.62</td>\n      <td>TBP tile: close-up</td>\n      <td>3D: white</td>\n      <td>18.050493</td>\n      <td>...</td>\n      <td>NaN</td>\n      <td>Benign</td>\n      <td>Benign</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>99.998188</td>\n    </tr>\n    <tr>\n      <th>395959</th>\n      <td>ISIC_9872176</td>\n      <td>0</td>\n      <td>IP_2456971</td>\n      <td>60.0</td>\n      <td>male</td>\n      <td>upper extremity</td>\n      <td>3.06</td>\n      <td>TBP tile: close-up</td>\n      <td>3D: white</td>\n      <td>17.836664</td>\n      <td>...</td>\n      <td>NaN</td>\n      <td>Benign</td>\n      <td>Benign</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>99.426705</td>\n    </tr>\n    <tr>\n      <th>398597</th>\n      <td>ISIC_9939770</td>\n      <td>0</td>\n      <td>IP_2456971</td>\n      <td>60.0</td>\n      <td>male</td>\n      <td>anterior torso</td>\n      <td>2.68</td>\n      <td>TBP tile: close-up</td>\n      <td>3D: white</td>\n      <td>19.071840</td>\n      <td>...</td>\n      <td>NaN</td>\n      <td>Benign</td>\n      <td>Benign</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>99.998605</td>\n    </tr>\n    <tr>\n      <th>398966</th>\n      <td>ISIC_9949507</td>\n      <td>0</td>\n      <td>IP_2456971</td>\n      <td>60.0</td>\n      <td>male</td>\n      <td>upper extremity</td>\n      <td>3.77</td>\n      <td>TBP tile: close-up</td>\n      <td>3D: white</td>\n      <td>18.261723</td>\n      <td>...</td>\n      <td>NaN</td>\n      <td>Benign</td>\n      <td>Benign</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>99.194908</td>\n    </tr>\n  </tbody>\n</table>\n<p>445 rows × 55 columns</p>\n</div>"},"metadata":{}}]},{"cell_type":"code","source":"train_only_features = []","metadata":{},"execution_count":null,"outputs":[]},{"cell_type":"raw","source":"","metadata":{}}]}
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "e6850c10",
+   "metadata": {
+    "_cell_guid": "b1076dfc-b9ad-4769-8c92-a6c4dae69d19",
+    "_uuid": "8f2839f25d086af736a60e9eeb907d3b93b6e0e5",
+    "execution": {
+     "iopub.execute_input": "2024-07-09T21:51:08.426632Z",
+     "iopub.status.busy": "2024-07-09T21:51:08.426233Z",
+     "iopub.status.idle": "2024-07-09T21:51:09.390592Z",
+     "shell.execute_reply": "2024-07-09T21:51:09.389554Z"
+    },
+    "papermill": {
+     "duration": 0.974308,
+     "end_time": "2024-07-09T21:51:09.393079",
+     "exception": false,
+     "start_time": "2024-07-09T21:51:08.418771",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "import numpy as np # linear algebra\n",
+    "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\n",
+    "import os\n",
+    "\n",
+    "# for dirname, _, filenames in os.walk('/kaggle/input'):\n",
+    "#     for filename in filenames:\n",
+    "#         print(os.path.join(dirname, filename))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "a61649ad",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-07-09T21:51:09.404245Z",
+     "iopub.status.busy": "2024-07-09T21:51:09.403770Z",
+     "iopub.status.idle": "2024-07-09T21:51:17.844301Z",
+     "shell.execute_reply": "2024-07-09T21:51:17.842766Z"
+    },
+    "papermill": {
+     "duration": 8.449599,
+     "end_time": "2024-07-09T21:51:17.847574",
+     "exception": false,
+     "start_time": "2024-07-09T21:51:09.397975",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_18/3231693260.py:2: DtypeWarning: Columns (51,52) have mixed types. Specify dtype option on import or set low_memory=False.\n",
+      "  train_metadata = pd.read_csv('/kaggle/input/isic-2024-challenge/train-metadata.csv',low_memory = True)\n"
+     ]
+    }
+   ],
+   "source": [
+    "HOME_DIRECTORY = 'kaggle/input/isic-2024-challenge/'\n",
+    "train_metadata = pd.read_csv('/kaggle/input/isic-2024-challenge/train-metadata.csv',low_memory = True)\n",
+    "test_metadata = pd.read_csv('/kaggle/input/isic-2024-challenge/test-metadata.csv',low_memory =True)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "708b94de",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-07-09T21:51:17.859236Z",
+     "iopub.status.busy": "2024-07-09T21:51:17.858839Z",
+     "iopub.status.idle": "2024-07-09T21:51:17.867283Z",
+     "shell.execute_reply": "2024-07-09T21:51:17.866026Z"
+    },
+    "papermill": {
+     "duration": 0.017349,
+     "end_time": "2024-07-09T21:51:17.869858",
+     "exception": false,
+     "start_time": "2024-07-09T21:51:17.852509",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(401059, 55)"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "train_metadata.shape"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "e99bc21e",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-07-09T21:51:17.882609Z",
+     "iopub.status.busy": "2024-07-09T21:51:17.882207Z",
+     "iopub.status.idle": "2024-07-09T21:51:18.016199Z",
+     "shell.execute_reply": "2024-07-09T21:51:18.015160Z"
+    },
+    "papermill": {
+     "duration": 0.14393,
+     "end_time": "2024-07-09T21:51:18.018709",
+     "exception": false,
+     "start_time": "2024-07-09T21:51:17.874779",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "401059"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "train_metadata.isic_id.nunique() "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "0a58a46d",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-07-09T21:51:18.030580Z",
+     "iopub.status.busy": "2024-07-09T21:51:18.030183Z",
+     "iopub.status.idle": "2024-07-09T21:51:18.039246Z",
+     "shell.execute_reply": "2024-07-09T21:51:18.038163Z"
+    },
+    "papermill": {
+     "duration": 0.017473,
+     "end_time": "2024-07-09T21:51:18.041360",
+     "exception": false,
+     "start_time": "2024-07-09T21:51:18.023887",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0.0009799056996601498"
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "train_metadata.target.mean()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "a20b6401",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-07-09T21:51:18.052903Z",
+     "iopub.status.busy": "2024-07-09T21:51:18.052508Z",
+     "iopub.status.idle": "2024-07-09T21:51:18.087317Z",
+     "shell.execute_reply": "2024-07-09T21:51:18.086088Z"
+    },
+    "papermill": {
+     "duration": 0.043808,
+     "end_time": "2024-07-09T21:51:18.090194",
+     "exception": false,
+     "start_time": "2024-07-09T21:51:18.046386",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "1042"
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "train_metadata.patient_id.nunique()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "8da94fc2",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-07-09T21:51:18.102603Z",
+     "iopub.status.busy": "2024-07-09T21:51:18.102229Z",
+     "iopub.status.idle": "2024-07-09T21:51:18.163340Z",
+     "shell.execute_reply": "2024-07-09T21:51:18.162254Z"
+    },
+    "papermill": {
+     "duration": 0.070402,
+     "end_time": "2024-07-09T21:51:18.165866",
+     "exception": false,
+     "start_time": "2024-07-09T21:51:18.095464",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>target</th>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>patient_id</th>\n",
+       "      <th></th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>IP_2456971</th>\n",
+       "      <td>14</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>IP_1959239</th>\n",
+       "      <td>8</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>IP_9324599</th>\n",
+       "      <td>7</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>IP_0669361</th>\n",
+       "      <td>7</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>IP_3905195</th>\n",
+       "      <td>6</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "            target\n",
+       "patient_id        \n",
+       "IP_2456971      14\n",
+       "IP_1959239       8\n",
+       "IP_9324599       7\n",
+       "IP_0669361       7\n",
+       "IP_3905195       6"
+      ]
+     },
+     "execution_count": 7,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "train_metadata.groupby(['patient_id']).agg({'target':'sum'}).sort_values('target',ascending = False).head(5)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "b66af1cc",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-07-09T21:51:18.178136Z",
+     "iopub.status.busy": "2024-07-09T21:51:18.177752Z",
+     "iopub.status.idle": "2024-07-09T21:51:18.245889Z",
+     "shell.execute_reply": "2024-07-09T21:51:18.244612Z"
+    },
+    "papermill": {
+     "duration": 0.077262,
+     "end_time": "2024-07-09T21:51:18.248431",
+     "exception": false,
+     "start_time": "2024-07-09T21:51:18.171169",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>isic_id</th>\n",
+       "      <th>target</th>\n",
+       "      <th>patient_id</th>\n",
+       "      <th>age_approx</th>\n",
+       "      <th>sex</th>\n",
+       "      <th>anatom_site_general</th>\n",
+       "      <th>clin_size_long_diam_mm</th>\n",
+       "      <th>image_type</th>\n",
+       "      <th>tbp_tile_type</th>\n",
+       "      <th>tbp_lv_A</th>\n",
+       "      <th>...</th>\n",
+       "      <th>lesion_id</th>\n",
+       "      <th>iddx_full</th>\n",
+       "      <th>iddx_1</th>\n",
+       "      <th>iddx_2</th>\n",
+       "      <th>iddx_3</th>\n",
+       "      <th>iddx_4</th>\n",
+       "      <th>iddx_5</th>\n",
+       "      <th>mel_mitotic_index</th>\n",
+       "      <th>mel_thick_mm</th>\n",
+       "      <th>tbp_lv_dnn_lesion_confidence</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>1220</th>\n",
+       "      <td>ISIC_0103600</td>\n",
+       "      <td>0</td>\n",
+       "      <td>IP_2456971</td>\n",
+       "      <td>60.0</td>\n",
+       "      <td>male</td>\n",
+       "      <td>lower extremity</td>\n",
+       "      <td>3.76</td>\n",
+       "      <td>TBP tile: close-up</td>\n",
+       "      <td>3D: white</td>\n",
+       "      <td>11.784011</td>\n",
+       "      <td>...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Benign</td>\n",
+       "      <td>Benign</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>78.042740</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2964</th>\n",
+       "      <td>ISIC_0145420</td>\n",
+       "      <td>0</td>\n",
+       "      <td>IP_2456971</td>\n",
+       "      <td>60.0</td>\n",
+       "      <td>male</td>\n",
+       "      <td>posterior torso</td>\n",
+       "      <td>2.74</td>\n",
+       "      <td>TBP tile: close-up</td>\n",
+       "      <td>3D: white</td>\n",
+       "      <td>17.505310</td>\n",
+       "      <td>...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Benign</td>\n",
+       "      <td>Benign</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>98.466611</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7598</th>\n",
+       "      <td>ISIC_0260667</td>\n",
+       "      <td>0</td>\n",
+       "      <td>IP_2456971</td>\n",
+       "      <td>60.0</td>\n",
+       "      <td>male</td>\n",
+       "      <td>posterior torso</td>\n",
+       "      <td>3.12</td>\n",
+       "      <td>TBP tile: close-up</td>\n",
+       "      <td>3D: white</td>\n",
+       "      <td>21.784206</td>\n",
+       "      <td>...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Benign</td>\n",
+       "      <td>Benign</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>99.998081</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7892</th>\n",
+       "      <td>ISIC_0268177</td>\n",
+       "      <td>0</td>\n",
+       "      <td>IP_2456971</td>\n",
+       "      <td>60.0</td>\n",
+       "      <td>male</td>\n",
+       "      <td>anterior torso</td>\n",
+       "      <td>2.60</td>\n",
+       "      <td>TBP tile: close-up</td>\n",
+       "      <td>3D: white</td>\n",
+       "      <td>16.102577</td>\n",
+       "      <td>...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Benign</td>\n",
+       "      <td>Benign</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>99.994957</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8212</th>\n",
+       "      <td>ISIC_0275762</td>\n",
+       "      <td>0</td>\n",
+       "      <td>IP_2456971</td>\n",
+       "      <td>60.0</td>\n",
+       "      <td>male</td>\n",
+       "      <td>posterior torso</td>\n",
+       "      <td>2.60</td>\n",
+       "      <td>TBP tile: close-up</td>\n",
+       "      <td>3D: white</td>\n",
+       "      <td>23.041968</td>\n",
+       "      <td>...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Benign</td>\n",
+       "      <td>Benign</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>77.218443</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>...</th>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>395357</th>\n",
+       "      <td>ISIC_9856283</td>\n",
+       "      <td>0</td>\n",
+       "      <td>IP_2456971</td>\n",
+       "      <td>60.0</td>\n",
+       "      <td>male</td>\n",
+       "      <td>anterior torso</td>\n",
+       "      <td>3.72</td>\n",
+       "      <td>TBP tile: close-up</td>\n",
+       "      <td>3D: white</td>\n",
+       "      <td>20.770307</td>\n",
+       "      <td>...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Benign</td>\n",
+       "      <td>Benign</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>99.998844</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>395680</th>\n",
+       "      <td>ISIC_9864511</td>\n",
+       "      <td>0</td>\n",
+       "      <td>IP_2456971</td>\n",
+       "      <td>60.0</td>\n",
+       "      <td>male</td>\n",
+       "      <td>anterior torso</td>\n",
+       "      <td>2.62</td>\n",
+       "      <td>TBP tile: close-up</td>\n",
+       "      <td>3D: white</td>\n",
+       "      <td>18.050493</td>\n",
+       "      <td>...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Benign</td>\n",
+       "      <td>Benign</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>99.998188</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>395959</th>\n",
+       "      <td>ISIC_9872176</td>\n",
+       "      <td>0</td>\n",
+       "      <td>IP_2456971</td>\n",
+       "      <td>60.0</td>\n",
+       "      <td>male</td>\n",
+       "      <td>upper extremity</td>\n",
+       "      <td>3.06</td>\n",
+       "      <td>TBP tile: close-up</td>\n",
+       "      <td>3D: white</td>\n",
+       "      <td>17.836664</td>\n",
+       "      <td>...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Benign</td>\n",
+       "      <td>Benign</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>99.426705</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>398597</th>\n",
+       "      <td>ISIC_9939770</td>\n",
+       "      <td>0</td>\n",
+       "      <td>IP_2456971</td>\n",
+       "      <td>60.0</td>\n",
+       "      <td>male</td>\n",
+       "      <td>anterior torso</td>\n",
+       "      <td>2.68</td>\n",
+       "      <td>TBP tile: close-up</td>\n",
+       "      <td>3D: white</td>\n",
+       "      <td>19.071840</td>\n",
+       "      <td>...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Benign</td>\n",
+       "      <td>Benign</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>99.998605</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>398966</th>\n",
+       "      <td>ISIC_9949507</td>\n",
+       "      <td>0</td>\n",
+       "      <td>IP_2456971</td>\n",
+       "      <td>60.0</td>\n",
+       "      <td>male</td>\n",
+       "      <td>upper extremity</td>\n",
+       "      <td>3.77</td>\n",
+       "      <td>TBP tile: close-up</td>\n",
+       "      <td>3D: white</td>\n",
+       "      <td>18.261723</td>\n",
+       "      <td>...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Benign</td>\n",
+       "      <td>Benign</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>99.194908</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>445 rows × 55 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "             isic_id  target  patient_id  age_approx   sex  \\\n",
+       "1220    ISIC_0103600       0  IP_2456971        60.0  male   \n",
+       "2964    ISIC_0145420       0  IP_2456971        60.0  male   \n",
+       "7598    ISIC_0260667       0  IP_2456971        60.0  male   \n",
+       "7892    ISIC_0268177       0  IP_2456971        60.0  male   \n",
+       "8212    ISIC_0275762       0  IP_2456971        60.0  male   \n",
+       "...              ...     ...         ...         ...   ...   \n",
+       "395357  ISIC_9856283       0  IP_2456971        60.0  male   \n",
+       "395680  ISIC_9864511       0  IP_2456971        60.0  male   \n",
+       "395959  ISIC_9872176       0  IP_2456971        60.0  male   \n",
+       "398597  ISIC_9939770       0  IP_2456971        60.0  male   \n",
+       "398966  ISIC_9949507       0  IP_2456971        60.0  male   \n",
+       "\n",
+       "       anatom_site_general  clin_size_long_diam_mm          image_type  \\\n",
+       "1220       lower extremity                    3.76  TBP tile: close-up   \n",
+       "2964       posterior torso                    2.74  TBP tile: close-up   \n",
+       "7598       posterior torso                    3.12  TBP tile: close-up   \n",
+       "7892        anterior torso                    2.60  TBP tile: close-up   \n",
+       "8212       posterior torso                    2.60  TBP tile: close-up   \n",
+       "...                    ...                     ...                 ...   \n",
+       "395357      anterior torso                    3.72  TBP tile: close-up   \n",
+       "395680      anterior torso                    2.62  TBP tile: close-up   \n",
+       "395959     upper extremity                    3.06  TBP tile: close-up   \n",
+       "398597      anterior torso                    2.68  TBP tile: close-up   \n",
+       "398966     upper extremity                    3.77  TBP tile: close-up   \n",
+       "\n",
+       "       tbp_tile_type   tbp_lv_A  ...  lesion_id  iddx_full  iddx_1  iddx_2  \\\n",
+       "1220       3D: white  11.784011  ...        NaN     Benign  Benign     NaN   \n",
+       "2964       3D: white  17.505310  ...        NaN     Benign  Benign     NaN   \n",
+       "7598       3D: white  21.784206  ...        NaN     Benign  Benign     NaN   \n",
+       "7892       3D: white  16.102577  ...        NaN     Benign  Benign     NaN   \n",
+       "8212       3D: white  23.041968  ...        NaN     Benign  Benign     NaN   \n",
+       "...              ...        ...  ...        ...        ...     ...     ...   \n",
+       "395357     3D: white  20.770307  ...        NaN     Benign  Benign     NaN   \n",
+       "395680     3D: white  18.050493  ...        NaN     Benign  Benign     NaN   \n",
+       "395959     3D: white  17.836664  ...        NaN     Benign  Benign     NaN   \n",
+       "398597     3D: white  19.071840  ...        NaN     Benign  Benign     NaN   \n",
+       "398966     3D: white  18.261723  ...        NaN     Benign  Benign     NaN   \n",
+       "\n",
+       "        iddx_3  iddx_4  iddx_5  mel_mitotic_index  mel_thick_mm  \\\n",
+       "1220       NaN     NaN     NaN                NaN           NaN   \n",
+       "2964       NaN     NaN     NaN                NaN           NaN   \n",
+       "7598       NaN     NaN     NaN                NaN           NaN   \n",
+       "7892       NaN     NaN     NaN                NaN           NaN   \n",
+       "8212       NaN     NaN     NaN                NaN           NaN   \n",
+       "...        ...     ...     ...                ...           ...   \n",
+       "395357     NaN     NaN     NaN                NaN           NaN   \n",
+       "395680     NaN     NaN     NaN                NaN           NaN   \n",
+       "395959     NaN     NaN     NaN                NaN           NaN   \n",
+       "398597     NaN     NaN     NaN                NaN           NaN   \n",
+       "398966     NaN     NaN     NaN                NaN           NaN   \n",
+       "\n",
+       "        tbp_lv_dnn_lesion_confidence  \n",
+       "1220                       78.042740  \n",
+       "2964                       98.466611  \n",
+       "7598                       99.998081  \n",
+       "7892                       99.994957  \n",
+       "8212                       77.218443  \n",
+       "...                              ...  \n",
+       "395357                     99.998844  \n",
+       "395680                     99.998188  \n",
+       "395959                     99.426705  \n",
+       "398597                     99.998605  \n",
+       "398966                     99.194908  \n",
+       "\n",
+       "[445 rows x 55 columns]"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "train_metadata[train_metadata.patient_id == 'IP_2456971']"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "df2159f0",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-07-09T21:51:18.261938Z",
+     "iopub.status.busy": "2024-07-09T21:51:18.261526Z",
+     "iopub.status.idle": "2024-07-09T21:51:18.267314Z",
+     "shell.execute_reply": "2024-07-09T21:51:18.266048Z"
+    },
+    "papermill": {
+     "duration": 0.015348,
+     "end_time": "2024-07-09T21:51:18.269737",
+     "exception": false,
+     "start_time": "2024-07-09T21:51:18.254389",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "train_only_features = ['lesion_id','iddx_full','iddx_1','iddx_2','iddx_3','iddx_4','iddx_5','mel_mitotic_index','mel_thick_mm','tbp_lv_dnn_lesion_confidence']"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "522f9b0c",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-07-09T21:51:18.283618Z",
+     "iopub.status.busy": "2024-07-09T21:51:18.283242Z",
+     "iopub.status.idle": "2024-07-09T21:51:18.346011Z",
+     "shell.execute_reply": "2024-07-09T21:51:18.344562Z"
+    },
+    "papermill": {
+     "duration": 0.072587,
+     "end_time": "2024-07-09T21:51:18.348709",
+     "exception": false,
+     "start_time": "2024-07-09T21:51:18.276122",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "train_compressed = train_metadata.drop(train_only_features, axis = 1)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "5de2677e",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-07-09T21:51:18.362175Z",
+     "iopub.status.busy": "2024-07-09T21:51:18.361780Z",
+     "iopub.status.idle": "2024-07-09T21:51:18.368928Z",
+     "shell.execute_reply": "2024-07-09T21:51:18.367634Z"
+    },
+    "papermill": {
+     "duration": 0.016718,
+     "end_time": "2024-07-09T21:51:18.371433",
+     "exception": false,
+     "start_time": "2024-07-09T21:51:18.354715",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(401059, 45)"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "train_compressed.shape "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "a5931a6a",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-07-09T21:51:18.385306Z",
+     "iopub.status.busy": "2024-07-09T21:51:18.384818Z",
+     "iopub.status.idle": "2024-07-09T21:51:18.394153Z",
+     "shell.execute_reply": "2024-07-09T21:51:18.393098Z"
+    },
+    "papermill": {
+     "duration": 0.018988,
+     "end_time": "2024-07-09T21:51:18.396519",
+     "exception": false,
+     "start_time": "2024-07-09T21:51:18.377531",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "isic_id                   object\n",
+       "patient_id                object\n",
+       "sex                       object\n",
+       "anatom_site_general       object\n",
+       "image_type                object\n",
+       "tbp_tile_type             object\n",
+       "tbp_lv_location           object\n",
+       "tbp_lv_location_simple    object\n",
+       "attribution               object\n",
+       "copyright_license         object\n",
+       "dtype: object"
+      ]
+     },
+     "execution_count": 12,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "train_compressed.dtypes[train_compressed.dtypes == 'object']"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "70233870",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-07-09T21:51:18.410592Z",
+     "iopub.status.busy": "2024-07-09T21:51:18.410193Z",
+     "iopub.status.idle": "2024-07-09T21:51:31.989557Z",
+     "shell.execute_reply": "2024-07-09T21:51:31.988178Z"
+    },
+    "papermill": {
+     "duration": 13.589828,
+     "end_time": "2024-07-09T21:51:31.992674",
+     "exception": false,
+     "start_time": "2024-07-09T21:51:18.402846",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Requirement already satisfied: lightgbm in /opt/conda/lib/python3.10/site-packages (4.2.0)\r\n",
+      "Requirement already satisfied: numpy in /opt/conda/lib/python3.10/site-packages (from lightgbm) (1.26.4)\r\n",
+      "Requirement already satisfied: scipy in /opt/conda/lib/python3.10/site-packages (from lightgbm) (1.11.4)\r\n"
+     ]
+    }
+   ],
+   "source": [
+    "!pip install lightgbm "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "id": "792c5802",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-07-09T21:51:32.007270Z",
+     "iopub.status.busy": "2024-07-09T21:51:32.006869Z",
+     "iopub.status.idle": "2024-07-09T21:51:35.146254Z",
+     "shell.execute_reply": "2024-07-09T21:51:35.145259Z"
+    },
+    "papermill": {
+     "duration": 3.149759,
+     "end_time": "2024-07-09T21:51:35.148789",
+     "exception": false,
+     "start_time": "2024-07-09T21:51:31.999030",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "from category_encoders.hashing import HashingEncoder\n",
+    "from sklearn.pipeline import make_pipeline \n",
+    "from sklearn.impute import KNNImputer\n",
+    "from lightgbm import LGBMClassifier"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "id": "8b39c38d",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-07-09T21:51:35.162960Z",
+     "iopub.status.busy": "2024-07-09T21:51:35.162378Z",
+     "iopub.status.idle": "2024-07-09T21:51:35.168997Z",
+     "shell.execute_reply": "2024-07-09T21:51:35.167942Z"
+    },
+    "papermill": {
+     "duration": 0.016187,
+     "end_time": "2024-07-09T21:51:35.171249",
+     "exception": false,
+     "start_time": "2024-07-09T21:51:35.155062",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "lgb_params = {\n",
+    "    'objective': 'binary',\n",
+    "    \"random_state\": 42,\n",
+    "    \"n_estimators\": 500,\n",
+    "    'learning_rate': 0.01,\n",
+    "    'bagging_freq': 1,\n",
+    "    'pos_bagging_fraction': 0.75,\n",
+    "    'neg_bagging_fraction': 0.05,\n",
+    "    'feature_fraction': 0.8,\n",
+    "    'lambda_l1': 0.8,\n",
+    "    'lambda_l2': 0.8,\n",
+    "    \"verbosity\": -1,\n",
+    "    # \"extra_trees\": True\n",
+    "}\n",
+    "\n",
+    "pip = make_pipeline(HashingEncoder(),\n",
+    "                    KNNImputer(),\n",
+    "                    LGBMClassifier(**lgb_params)) "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "id": "edc9761f",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-07-09T21:51:35.185495Z",
+     "iopub.status.busy": "2024-07-09T21:51:35.184577Z",
+     "iopub.status.idle": "2024-07-09T21:57:20.497939Z",
+     "shell.execute_reply": "2024-07-09T21:57:20.496600Z"
+    },
+    "papermill": {
+     "duration": 345.328522,
+     "end_time": "2024-07-09T21:57:20.505848",
+     "exception": false,
+     "start_time": "2024-07-09T21:51:35.177326",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "CPU times: user 3 µs, sys: 1 µs, total: 4 µs\n",
+      "Wall time: 7.39 µs\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<style>#sk-container-id-1 {color: black;background-color: white;}#sk-container-id-1 pre{padding: 0;}#sk-container-id-1 div.sk-toggleable {background-color: white;}#sk-container-id-1 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-1 label.sk-toggleable__label-arrow:before {content: \"▸\";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-1 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-1 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-1 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-1 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-1 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-1 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: \"▾\";}#sk-container-id-1 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-1 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-1 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-1 div.sk-parallel-item::after {content: \"\";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-1 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-serial::before {content: \"\";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-1 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-1 div.sk-item {position: relative;z-index: 1;}#sk-container-id-1 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-1 div.sk-item::before, #sk-container-id-1 div.sk-parallel-item::before {content: \"\";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-1 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-1 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-1 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-1 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-1 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-1 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-1 div.sk-label-container {text-align: center;}#sk-container-id-1 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-1 div.sk-text-repr-fallback {display: none;}</style><div id=\"sk-container-id-1\" class=\"sk-top-container\"><div class=\"sk-text-repr-fallback\"><pre>Pipeline(steps=[(&#x27;hashingencoder&#x27;,\n",
+       "                 HashingEncoder(cols=[&#x27;isic_id&#x27;, &#x27;patient_id&#x27;, &#x27;sex&#x27;,\n",
+       "                                      &#x27;anatom_site_general&#x27;, &#x27;image_type&#x27;,\n",
+       "                                      &#x27;tbp_tile_type&#x27;, &#x27;tbp_lv_location&#x27;,\n",
+       "                                      &#x27;tbp_lv_location_simple&#x27;, &#x27;attribution&#x27;,\n",
+       "                                      &#x27;copyright_license&#x27;],\n",
+       "                                max_process=2, max_sample=200529)),\n",
+       "                (&#x27;knnimputer&#x27;, KNNImputer()),\n",
+       "                (&#x27;lgbmclassifier&#x27;,\n",
+       "                 LGBMClassifier(bagging_freq=1, feature_fraction=0.8,\n",
+       "                                lambda_l1=0.8, lambda_l2=0.8,\n",
+       "                                learning_rate=0.01, n_estimators=500,\n",
+       "                                neg_bagging_fraction=0.05, objective=&#x27;binary&#x27;,\n",
+       "                                pos_bagging_fraction=0.75, random_state=42,\n",
+       "                                verbosity=-1))])</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class=\"sk-container\" hidden><div class=\"sk-item sk-dashed-wrapped\"><div class=\"sk-label-container\"><div class=\"sk-label sk-toggleable\"><input class=\"sk-toggleable__control sk-hidden--visually\" id=\"sk-estimator-id-1\" type=\"checkbox\" ><label for=\"sk-estimator-id-1\" class=\"sk-toggleable__label sk-toggleable__label-arrow\">Pipeline</label><div class=\"sk-toggleable__content\"><pre>Pipeline(steps=[(&#x27;hashingencoder&#x27;,\n",
+       "                 HashingEncoder(cols=[&#x27;isic_id&#x27;, &#x27;patient_id&#x27;, &#x27;sex&#x27;,\n",
+       "                                      &#x27;anatom_site_general&#x27;, &#x27;image_type&#x27;,\n",
+       "                                      &#x27;tbp_tile_type&#x27;, &#x27;tbp_lv_location&#x27;,\n",
+       "                                      &#x27;tbp_lv_location_simple&#x27;, &#x27;attribution&#x27;,\n",
+       "                                      &#x27;copyright_license&#x27;],\n",
+       "                                max_process=2, max_sample=200529)),\n",
+       "                (&#x27;knnimputer&#x27;, KNNImputer()),\n",
+       "                (&#x27;lgbmclassifier&#x27;,\n",
+       "                 LGBMClassifier(bagging_freq=1, feature_fraction=0.8,\n",
+       "                                lambda_l1=0.8, lambda_l2=0.8,\n",
+       "                                learning_rate=0.01, n_estimators=500,\n",
+       "                                neg_bagging_fraction=0.05, objective=&#x27;binary&#x27;,\n",
+       "                                pos_bagging_fraction=0.75, random_state=42,\n",
+       "                                verbosity=-1))])</pre></div></div></div><div class=\"sk-serial\"><div class=\"sk-item\"><div class=\"sk-estimator sk-toggleable\"><input class=\"sk-toggleable__control sk-hidden--visually\" id=\"sk-estimator-id-2\" type=\"checkbox\" ><label for=\"sk-estimator-id-2\" class=\"sk-toggleable__label sk-toggleable__label-arrow\">HashingEncoder</label><div class=\"sk-toggleable__content\"><pre>HashingEncoder(cols=[&#x27;isic_id&#x27;, &#x27;patient_id&#x27;, &#x27;sex&#x27;, &#x27;anatom_site_general&#x27;,\n",
+       "                     &#x27;image_type&#x27;, &#x27;tbp_tile_type&#x27;, &#x27;tbp_lv_location&#x27;,\n",
+       "                     &#x27;tbp_lv_location_simple&#x27;, &#x27;attribution&#x27;,\n",
+       "                     &#x27;copyright_license&#x27;],\n",
+       "               max_process=2, max_sample=200529)</pre></div></div></div><div class=\"sk-item\"><div class=\"sk-estimator sk-toggleable\"><input class=\"sk-toggleable__control sk-hidden--visually\" id=\"sk-estimator-id-3\" type=\"checkbox\" ><label for=\"sk-estimator-id-3\" class=\"sk-toggleable__label sk-toggleable__label-arrow\">KNNImputer</label><div class=\"sk-toggleable__content\"><pre>KNNImputer()</pre></div></div></div><div class=\"sk-item\"><div class=\"sk-estimator sk-toggleable\"><input class=\"sk-toggleable__control sk-hidden--visually\" id=\"sk-estimator-id-4\" type=\"checkbox\" ><label for=\"sk-estimator-id-4\" class=\"sk-toggleable__label sk-toggleable__label-arrow\">LGBMClassifier</label><div class=\"sk-toggleable__content\"><pre>LGBMClassifier(bagging_freq=1, feature_fraction=0.8, lambda_l1=0.8,\n",
+       "               lambda_l2=0.8, learning_rate=0.01, n_estimators=500,\n",
+       "               neg_bagging_fraction=0.05, objective=&#x27;binary&#x27;,\n",
+       "               pos_bagging_fraction=0.75, random_state=42, verbosity=-1)</pre></div></div></div></div></div></div></div>"
+      ],
+      "text/plain": [
+       "Pipeline(steps=[('hashingencoder',\n",
+       "                 HashingEncoder(cols=['isic_id', 'patient_id', 'sex',\n",
+       "                                      'anatom_site_general', 'image_type',\n",
+       "                                      'tbp_tile_type', 'tbp_lv_location',\n",
+       "                                      'tbp_lv_location_simple', 'attribution',\n",
+       "                                      'copyright_license'],\n",
+       "                                max_process=2, max_sample=200529)),\n",
+       "                ('knnimputer', KNNImputer()),\n",
+       "                ('lgbmclassifier',\n",
+       "                 LGBMClassifier(bagging_freq=1, feature_fraction=0.8,\n",
+       "                                lambda_l1=0.8, lambda_l2=0.8,\n",
+       "                                learning_rate=0.01, n_estimators=500,\n",
+       "                                neg_bagging_fraction=0.05, objective='binary',\n",
+       "                                pos_bagging_fraction=0.75, random_state=42,\n",
+       "                                verbosity=-1))])"
+      ]
+     },
+     "execution_count": 16,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%time\n",
+    "pip.fit(train_compressed.drop('target',\n",
+    "                              axis = 1), train_compressed['target'])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "id": "a566857d",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-07-09T21:57:20.520962Z",
+     "iopub.status.busy": "2024-07-09T21:57:20.520503Z",
+     "iopub.status.idle": "2024-07-09T21:57:21.338269Z",
+     "shell.execute_reply": "2024-07-09T21:57:21.337122Z"
+    },
+    "papermill": {
+     "duration": 0.828714,
+     "end_time": "2024-07-09T21:57:21.341033",
+     "exception": false,
+     "start_time": "2024-07-09T21:57:20.512319",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "import pickle\n",
+    "\n",
+    "with open('metadata-model.pkl','wb') as f:\n",
+    "    pickle.dump(pip,f)"
+   ]
+  }
+ ],
+ "metadata": {
+  "kaggle": {
+   "accelerator": "none",
+   "dataSources": [
+    {
+     "databundleVersionId": 8940774,
+     "sourceId": 63056,
+     "sourceType": "competition"
+    }
+   ],
+   "dockerImageVersionId": 30732,
+   "isGpuEnabled": false,
+   "isInternetEnabled": true,
+   "language": "python",
+   "sourceType": "notebook"
+  },
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.13"
+  },
+  "papermill": {
+   "default_parameters": {},
+   "duration": 376.762505,
+   "end_time": "2024-07-09T21:57:22.271193",
+   "environment_variables": {},
+   "exception": null,
+   "input_path": "__notebook__.ipynb",
+   "output_path": "__notebook__.ipynb",
+   "parameters": {},
+   "start_time": "2024-07-09T21:51:05.508688",
+   "version": "2.5.0"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
